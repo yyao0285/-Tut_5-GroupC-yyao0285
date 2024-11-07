@@ -1,8 +1,8 @@
-let patterns = [];
-let beads = [];
+let patterns = []; // Array to store circular patterns
+let beads = []; // Array to store decorative beads
 const padding = 20; // Padding between elements
 
-// Class to create circular patterns with various styles and properties
+// Class to create circular patterns with various properties and animations
 class CircularPattern {
   constructor(x, y, colors) {
     this.x = x; // X-coordinate of the pattern's center
@@ -13,9 +13,9 @@ class CircularPattern {
     this.ringSpacing = 7; // Spacing between rings
     this.expansionFactor = 0; // Controls the expansion of small dots
     this.rotationAngle = 0; // Controls the rotation angle of small dots
-    this.internalRotationAngle = 0; // Controls rotation of the internal pattern
-    this.colorChangeInterval = 2000; // Changes background color every 2 seconds
-    this.lastColorChangeTime = 0; // Timestamp for the last color change
+    this.internalRotationAngle = 0; // Controls the rotation angle of the internal pattern
+    this.colorChangeInterval = 2000; // Interval to change background color every 2 seconds
+    this.lastColorChangeTime = 0; // Timestamp of the last color change
     this.currentBgColor = this.colors.bgColors; // Current background color
     this.colorPalette = ["#cdf5e1", "#fef3f3", "#f7edd9", "#f4b628", "#b6eff1", "#cfe3f5", "#fdc038"];
     
@@ -24,25 +24,69 @@ class CircularPattern {
     this.lastPatternChangeTime = 0; // Timestamp for the last pattern change
     this.patternStyles = ["concentric circles", "zigzag lines", "beads", "default"];
     this.currentPatternStyle = this.colors.internalPatternStyle; // Initial pattern style
+
+    // Timer for drawing tree rings
+    this.ringDrawStartTime = millis(); // Start time for drawing rings
+    this.ringDrawInterval = 500; // Interval between each ring (milliseconds)
+    this.maxRings = floor(this.radius / 10); // Maximum number of rings based on radius
+    this.ringsDrawn = 0; // Current count of drawn rings
+    this.ringRotationAngle = 0; // Rotation angle for tree rings
   }
 
-  // Updates background color and pattern style at set intervals
+  // Update background color and pattern style based on time intervals
   updateColorAndPattern() {
-    // Update background color
+    // Update background color at set intervals
     if (millis() - this.lastColorChangeTime > this.colorChangeInterval) {
       let newColor;
       do {
         newColor = random(this.colorPalette); // Choose a random color from the palette
-      } while (newColor === this.currentBgColor); // Ensure new color is different
+      } while (newColor === this.currentBgColor); // Ensure new color is different from the current one
       this.currentBgColor = newColor; // Set new color
       this.lastColorChangeTime = millis(); // Reset timer
     }
 
-    // Update pattern style
+    // Update pattern style at set intervals
     if (millis() - this.lastPatternChangeTime > this.patternChangeInterval) {
       this.currentPatternStyle = random(this.patternStyles); // Choose a random pattern style
       this.lastPatternChangeTime = millis(); // Reset timer
     }
+
+    // Update the dynamic display of tree rings
+    if (millis() - this.ringDrawStartTime > this.ringDrawInterval) {
+      if (this.ringsDrawn < this.maxRings) {
+        this.ringsDrawn++; // Increment the number of rings drawn
+        this.ringDrawStartTime = millis(); // Reset ring timer
+      }
+    }
+
+    // Rotate tree rings
+    this.ringRotationAngle += 0.002; // Control rotation speed
+  }
+
+  // Draws dynamic tree rings with random colors and gaps for a textured effect
+  drawTreeRings() {
+    push();
+    noFill();
+    strokeWeight(2); // Thicker lines for rings
+    rotate(this.ringRotationAngle); // Rotate the entire tree ring structure
+
+    // Draw each ring that should be displayed
+    for (let i = 1; i <= this.ringsDrawn; i++) {
+      let ringColor = random(this.colorPalette);
+      stroke(ringColor); // Set random color for each ring
+
+      beginShape();
+      for (let angle = 0; angle < TWO_PI; angle += 0.1) {
+        // Randomly skip some parts of the ring to create a broken effect
+        if (random() > 0.2) { // 80% probability to draw, 20% probability to skip
+          let x = cos(angle) * i * 10;
+          let y = sin(angle) * i * 10;
+          vertex(x, y);
+        }
+      }
+      endShape(CLOSE);
+    }
+    pop(); // Restore original rotation state
   }
 
   // Draws the internal pattern based on the current pattern style
@@ -150,6 +194,7 @@ class CircularPattern {
     }
 
     this.drawInternalPattern(); // Draw the internal pattern
+    this.drawTreeRings(); // Draw tree rings pattern
     pop();
   }
 
@@ -325,7 +370,7 @@ function setup() {
       internalBbColor: "#fb586a",
       internalPatternStyle: "concentric circles"
     },
-    // ... other color schemes
+    // Additional color schemes would be defined here
   ];
 
   // Layout grid of circular patterns
@@ -334,8 +379,8 @@ function setup() {
     for (let y = gridSize / 2; y < height - gridSize / 2; y += gridSize) {
       let posX = x + random(-15, 15);
       let posY = y + random(-15, 15);
-      const choosenPallete = random(arrayOfColors);
-      const pattern = new CircularPattern(posX, posY, choosenPallete);
+      const chosenPalette = random(arrayOfColors);
+      const pattern = new CircularPattern(posX, posY, chosenPalette);
       let overlapping = false;
       for (let other of patterns) {
         if (pattern.overlaps(other)) {
@@ -394,14 +439,14 @@ function draw() {
   });
   drawCurvyConnections(); // Draw connections between beads
   beads.forEach(bead => {
-    bead.display(); // Display each decorative bead
+    bead.display(); // Display each bead
   });
 }
 
-// Handle canvas resizing to keep patterns responsive
+// Handle window resizing to reinitialize canvas and patterns
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   patterns = [];
   beads = [];
-  setup(); // Reinitialize on resize for responsive design
+  setup(); // Reinitialize patterns and beads
 }
