@@ -13,9 +13,9 @@ I was inspired by the Wheel of Fate in the Tarot cards and used concentric circl
 
 Here are some images that inspired my design:
 
-1. ![Clock Concept](./9041.png_300.png)
-2. ![Wheel of Fortune](./0d338744ebf81a4c9b10a780d32a6059252da65d.webp)
-3. ![Tree Rings](./images.jpeg)
+1. ![Clock Concept](./Picture/9041.png_300.png)
+2. ![Wheel of Fortune](./Picture/0d338744ebf81a4c9b10a780d32a6059252da65d.webp)
+3. ![Tree Rings](./Picture/images.jpeg)
 
 ### Technical Notes
 
