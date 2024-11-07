@@ -1,0 +1,14 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1a4a5a; /* Dark teal background matching the artwork */
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+}
