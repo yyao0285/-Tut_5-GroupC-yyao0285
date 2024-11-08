@@ -450,3 +450,6 @@ function windowResized() {
   beads = [];
   setup(); // Reinitialize patterns and beads
 }
+
+//Acknowledgement 
+//Used chatgpt to sort and comb the content.
